@@ -26,12 +26,14 @@ app.layout = dbc.Container([
         dbc.Col(dcc.Graph(id='bar-plot-2'), width=12),
         dbc.Col(dcc.Graph(id='bar-plot-3'), width=12),  # fig3
         dbc.Col(dcc.Graph(id='bar-plot-4'), width=12),  # fig4
+        dbc.Col(dcc.Graph(id='bar-plot-5'), width=12),  # fig6
         dbc.Col(dcc.Graph(id='bar-plot-6'), width=12),  # fig6
         dbc.Col(dcc.Graph(id='bar-plot-7'), width=12),  # fig7
         dbc.Col(dcc.Graph(id='bar-plot-8'), width=12),  # fig8
         dbc.Col(dcc.Graph(id='bar-plot-9'), width=12),  # fig9
         dbc.Col(dcc.Graph(id='bar-plot-10'), width=12), # fig10
         dbc.Col(dcc.Graph(id='pie-chart'), width=12),    # fig11 (pie chart)
+        dbc.Col(dcc.Graph(id='bar-plot-12'), width=12), # fig10
     ])
 ])
 
@@ -210,6 +212,42 @@ def update_graph_4(contents, filename):
     return fig4
 
 @app.callback(
+    Output('bar-plot-5', 'figure'),
+    Input('upload-data', 'contents'),
+    State('upload-data', 'filename')
+)
+
+def update_graph_5(contents, filename):
+		if contents is None:
+			raise PreventUpdate
+
+		df = decode_file(contents)
+		values = ['Q12)Avoid_stove', 'Q12) central_AC', 'Q12) Other_AC', 'Q12) Close_W', 'Q12) clean_indoor', 'Q12)Cancel', 'Q12) Portable_air', 'Q12) Give_Masks', 'Q12) Seal_WD (WD=Windows/Doors)'] 	
+
+		rows = ['Q1.1.family_center'] 
+
+		pivot_table = pd.pivot_table(
+			df,
+			values= values,  
+			index= rows,  # Rows
+			columns=None,       # Columns
+			aggfunc='count'  # Aggregation functions
+		)
+
+		pivot_table_percentage = round(pivot_table.div(pivot_table.sum(axis=1), axis=0) * 100,2)
+		pivot_table_percentage=pivot_table_percentage.reset_index()
+		pivot_table_percentage.columns
+
+		fig5 = px.bar(pivot_table_percentage, x='Q1.1.family_center', y=values, title="Type of center vs How they react to wildfire smoke")
+
+		fig5.update_layout(
+			width=1000,  # Set the width of the chart (adjust as needed)
+			height=600,  # Set the height of the chart (adjust as needed)
+		)
+
+		return fig5
+
+@app.callback(
     Output('bar-plot-6', 'figure'),
     Input('upload-data', 'contents'),
     State('upload-data', 'filename')
@@ -382,6 +420,50 @@ def update_pie_chart(contents, filename):
     fig11.update_layout(width=1000, height=600)
 
     return fig11
+
+@app.callback(
+    Output('bar-plot-12', 'figure'),
+    Input('upload-data', 'contents'),
+    State('upload-data', 'filename')
+)
+
+def update_graph_12(contents, filename):
+    if contents is None:
+        raise PreventUpdate
+
+    df = decode_file(contents)
+    # Values for aggregation
+    
+    values = ['Q12)Avoid_stove', 'Q12) central_AC', 'Q12) Other_AC',
+              'Q12) Close_W', 'Q12) clean_indoor', 'Q12)Cancel', 'Q12) Portable_air', 'Q12) Give_Masks',
+              'Q12) Seal_WD (WD=Windows/Doors)'] 
+    rows = ['Section'] #rows
+
+    #Pivot table
+    pivot_table = pd.pivot_table(
+                df,
+                values= values,  
+                index= rows,  # Rows
+                columns=None,       # Columns
+                aggfunc='count'  # Aggregation functions
+    )
+
+    pivot_table_percentage = round(pivot_table.div(pivot_table.sum(axis=1), axis=0) * 100,2)
+    pivot_table_percentage=pivot_table_percentage.reset_index()
+    pivot_table_percentage.columns
+
+    #Plotly bar plot
+    fig12 = px.bar(pivot_table_percentage, x='Section', y=values, title="Section vs reaction to wildfire smoke")
+
+    #Figsize
+    fig12.update_layout(
+                width=1000,  # Set the width of the chart (adjust as needed)
+                height=600,  # Set the height of the chart (adjust as needed)
+    )
+
+    return fig12
+
+ 
 
 if __name__ == '__main__':
     app.run_server(debug=True)
