@@ -57,3 +57,48 @@ fig1.update_layout(
 )
 
 fig1.show()
+
+# Making a new derived Roles column
+# Define conditions
+conditions = [
+    (df['Q3)  role_Owner']+df['Q3)  role_Manager']+df['Q3) role_Teacher'])==3,
+    (df['Q3)  role_Owner']==1),
+    (df['Q3)  role_Manager']==1),
+    df['Q3) role_Teacher']==1,
+]
+
+# Define corresponding values for the new column
+values = ['All', 'Owner', 'Manager','Teacher']
+
+# Apply the conditions
+df['Roles'] = np.select(conditions, values, default='No Match')
+df=df[df['Roles']!='No Match']
+
+# Values for aggregation
+values = ['Q10_Supervisor_words','Q10_Unknown_words','Q10_Computer_Alert_words','Q10_Television_Radio_words','Q10_Parent_Guardian_words','Q10b_fire_over_cell_Words\n\n','Q10_Family_Friend_words','Q10_Other_words'] 
+rows = ['Roles'] #rows
+
+#Pivot table
+pivot_table = pd.pivot_table(
+    df,
+    values= values,  
+    index= rows,  # Rows
+    columns=None,       # Columns
+    aggfunc='count'  # Aggregation functions
+)
+
+pivot_table_percentage = round(pivot_table.div(pivot_table.sum(axis=1), axis=0) * 100,2)
+pivot_table_percentage=pivot_table_percentage.reset_index()
+pivot_table_percentage.columns
+
+#Plotly bar plot
+fig2 = px.bar(pivot_table_percentage, x='Roles', y=values, title="Section vs How they find out there's an event actively affecting their facility",
+            )
+
+#Figsize
+fig2.update_layout(
+    width=1000,  # Set the width of the chart (adjust as needed)
+    height=600,  # Set the height of the chart (adjust as needed)
+)
+
+fig2.show()
