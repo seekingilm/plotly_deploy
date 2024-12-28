@@ -5,7 +5,7 @@ import plotly.express as px
 from dash import Dash, dcc, html, Input, Output, State
 from dash.exceptions import PreventUpdate
 import dash_bootstrap_components as dbc
-import base65
+import base64
 import io
 
 # Initialize the Dash app
@@ -41,7 +41,7 @@ app.layout = dbc.Container([
 
 def decode_file(contents):
     content_type, content_string = contents.split(',')
-    decoded = base65.b64decode(content_string)
+    decoded = base64.b64decode(content_string)
     return pd.read_excel(io.BytesIO(decoded))
 
 @app.callback(
