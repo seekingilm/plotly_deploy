@@ -8,6 +8,7 @@ pandas = "*"
 plotly = "*"
 openpyxl = "*"
 dash-bootstrap-components = "*"
+gunicorn = "*"
 
 [dev-packages]
 
