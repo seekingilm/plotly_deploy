@@ -9,7 +9,6 @@ import base64
 import io
 
 # Initialize the Dash app
-port = int(os.environ.get('PORT', 4000))
 app = Dash(__name__, external_stylesheets=[dbc.themes.BOOTSTRAP])
 
 app.layout = dbc.Container([
@@ -169,7 +168,6 @@ def update_graph_4(contents, filename):
 
     df = decode_file(contents)
 
-    # Your existing code for fig4 here
     df2 = df.groupby('Q1.1.family_center')['Q8) kids_affected_smoke_indoors_percentage \nUsing words'].value_counts().reset_index()
     df2 = df1.rename(columns={'Q8) kids_affected_smoke_indoors_percentage \nUsing words': 'Percentage'})
     df2 = df1[df1['Percentage'] != 0]
@@ -224,7 +222,7 @@ def update_graph_6(contents, filename):
 			raise PreventUpdate
 
 		df = decode_file(contents)
-		values = ['Q13)Avoid_stove', 'Q12) central_AC', 'Q12) Other_AC', 'Q12) Close_W', 'Q12) clean_indoor', 'Q12)Cancel', 'Q12) Portable_air', 'Q12) Give_Masks', 'Q12) Seal_WD (WD=Windows/Doors)'] 	
+		values = ['Q13) Avoid_stove', 'Q12) central_AC', 'Q12) Other_AC', 'Q12) Close_W', 'Q12) clean_indoor', 'Q12)Cancel', 'Q12) Portable_air', 'Q12) Give_Masks', 'Q12) Seal_WD (WD=Windows/Doors)'] 	
 
 		rows = ['Q2.1.family_center'] 
 
@@ -436,9 +434,9 @@ def update_graph_13(contents, filename):
     df = decode_file(contents)
     # Values for aggregation
     
-    values = ['Q13)Avoid_stove', 'Q12) central_AC', 'Q12) Other_AC',
+    values = ['Q13) Avoid_stove', 'Q12) central_AC', 'Q12) Other_AC',
               'Q13) Close_W', 'Q12) clean_indoor', 'Q12)Cancel', 'Q12) Portable_air', 'Q12) Give_Masks',
-              'Q13) Seal_WD (WD=Windows/Doors)'] 
+              'Q13) Seal_WD'] 
     rows = ['Section'] #rows
 
     #Pivot table
@@ -468,4 +466,4 @@ def update_graph_13(contents, filename):
  
 
 if __name__ == '__main__':
-    app.run_server(port=port)
+    app.run()
